@@ -8,6 +8,9 @@ export default function (req, res, next) {
         case '/api/logout':
             next();
         break;
+        case '/api/get-blogs':
+            next();
+        break;
         default:
         if (!req.cookies['archeravenue']) forbid(res);
         else {

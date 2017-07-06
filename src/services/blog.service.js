@@ -18,10 +18,18 @@ export function getCurrentData() {
         function handleReadData(err, data) {
             if (err) reject(err);
             const parsed = JSON.parse(data);
-            resolve(parsed);
+            parsed.sort(sortArrayByDate);
+            console.log(parsed.length);
+            if (parsed.length > 10) {
+                resolve(parsed.splice((parsed.length - 11), 10));
+            } else resolve(parsed);
         }
     });
     
+}
+
+function sortArrayByDate(a, b) {
+    return new Date(a) + new Date(b); 
 }
 
 export function parseAllBlogs(blogs) {
