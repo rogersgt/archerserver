@@ -9,7 +9,11 @@ export function writeBlog(req, res) {
 
 export function getBlogs(req, res) {
     return Promise.resolve()
-    .then(blogService.getBlogs())
-    .then((blogs) => res.status(200).send(blogs))
+    .then(async () => {
+        const blogs = await blogService.getCurrentData();
+        return Promise.resolve(blogs);
+    })
+    .then((blogs) => Promise.resolve(blogService.parseAllBlogs(blogs)))
+    .then((blogs) => res.send(blogs))
     .catch((err) => res.status(500).send(err));
 }

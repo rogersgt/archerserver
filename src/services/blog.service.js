@@ -1,32 +1,19 @@
-import s3fs from 's3fs';
+import agent from './db/agent';
 
 export async function updateBlogs(jsonData) {
     const data = JSON.stringify(jsonData);
     const allData = await getCurrentData();
     allData.push(data);
-    const writer = makeWriter();
+    const writer = agent();
 
-    await writer.writeFile('blogs.json', JSON.stringify(allData));
+    await writer.writeFile(process.env.BLOGFILE, JSON.stringify(allData));
     return data;
 }
 
-export async function getBlogs() {
-    const data = await getCurrentData();
-}
-
-function makeWriter() {
-    const opts = {
-        region: 'us-east-1',
-        accessKeyId: process.env.AWS_ACCESS_KEY,
-        secretAccessKey: process.env.AWS_SECRET_KEY
-    };
-    return new s3fs(process.env.AWS_BUCKET_NAME, opts);
-}
-
-function getCurrentData() {
+export function getCurrentData() {
     return new Promise((resolve, reject) => {
-        const writer = makeWriter();
-        writer.readFile('blogs.json', 'utf-8', handleReadData);
+        const writer = agent();
+        return writer.readFile(process.env.BLOGFILE, 'utf-8', handleReadData);
 
         function handleReadData(err, data) {
             if (err) reject(err);
@@ -35,4 +22,8 @@ function getCurrentData() {
         }
     });
     
+}
+
+export function parseAllBlogs(blogs) {
+    return blogs.map((blog) => JSON.parse(blog));
 }
